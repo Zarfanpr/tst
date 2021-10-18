@@ -1,22 +1,8 @@
-from typing import List, Optional
-from pydantic import BaseModel
+from fastapi import FastAPI
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
+app = FastAPI()
 
 
-class TokenData(BaseModel):
-    username: Optional[str] = None
-
-
-class User(BaseModel):
-    username: str
-    is_active: Optional[bool] = None
-
-
-class UserInDB(User):
-    hashed_password: str
-
-class UserCreate(User):
-    password: str
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
