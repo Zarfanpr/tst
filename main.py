@@ -12,7 +12,7 @@ SECRET_KEY = "95be5a51fa29a6cf400f4e60684b0594bb77260916151c09a7fd39613316cc4b"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-fake_users_db = {
+dummy_user = {
     "zarfanpr": {
         "username": "zarfanpr",
         "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
@@ -89,7 +89,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    user = get_user(dummy_user, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -99,13 +99,13 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
-@app.get("/")
+@app.get("/", tags=["Initiate"])
 async def Nama_NIM():
-    return("Nama: Zarfa Naida P, NIM: 18219014, Silahkan buka: http://127.0.0.1:8000/docs")
+    return("Nama: Zarfa Naida P, NIM: 18219014, Silahkan buka: http://zarfanpr-tst1.herokuapp.com/docs")
 
-@app.post("/token", response_model=Token)
+@app.post("/token", response_model=Token, tags=["Initiate"])
 async def login_untuk_akes_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    user = authenticate_user(dummy_user, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -118,11 +118,11 @@ async def login_untuk_akes_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/users/me/", response_model=User)
+@app.get("/users/me/", response_model=User, tags=["Initiate"])
 async def Data_User(current_user: User = Depends(get_current_active_user)):
     return current_user
 
-@app.get('/menu/{item_id}')
+@app.get('/menu/{item_id}', tags=["Menu"])
 async def read_menu(item_id:int, current_user: User = Depends(get_current_active_user)):
 	for menu_item in data['menu']:
 		if menu_item['id']==item_id:
@@ -131,7 +131,7 @@ async def read_menu(item_id:int, current_user: User = Depends(get_current_active
 		status_code=404,detail=f'Item not found'
 	)
 
-@app.put('/menu/{item_id}')
+@app.put('/menu/{item_id}', tags=["Menu"])
 async def update_menu(item_id:int,item_name:str,current_user: User = Depends(get_current_active_user)):
     listmenu=[]
     for menu_item in data['menu']:
@@ -143,7 +143,7 @@ async def update_menu(item_id:int,item_name:str,current_user: User = Depends(get
         json.dump(data, tambahdata)
     return data
 
-@app.delete('/menu')
+@app.delete('/menu', tags=["Menu"])
 async def delete_menu(item_id:int, item_name:str,current_user: User = Depends(get_current_active_user)):
     delmenu=[]
     for menu_item in data['menu']:
@@ -156,7 +156,7 @@ async def delete_menu(item_id:int, item_name:str,current_user: User = Depends(ge
         json.dump(data, tambahdata)
     return data       
 
-@app.post('/menu')
+@app.post('/menu', tags=["Menu"])
 async def add_menu(item_id:int,item_name:str,current_user: User = Depends(get_current_active_user)):
     data['menu'].append({'id':item_id,'name':item_name})
     with open ('menu.json','w') as tambahdata:
