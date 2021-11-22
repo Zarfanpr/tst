@@ -101,7 +101,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 @app.get("/", tags=["Initiate"])
 async def Nama_NIM():
-    return("Nama: Zarfa Naida P, NIM: 18219014, Silahkan buka: http://zarfanpr-tst1.herokuapp.com/docs")
+    return("Nama: Zarfa Naida P, NIM: 18219014, Silahkan buka: http://zarfanpr-tst2.herokuapp.com/docs")
 
 @app.post("/token", response_model=Token, tags=["Initiate"])
 async def login_untuk_akes_token(form_data: OAuth2PasswordRequestForm = Depends()):
